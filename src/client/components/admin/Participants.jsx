@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import s from './admin.module.css'
 import { Area, Field, Panel, Text, Toggle } from './ui.jsx'
+import { isVideo } from '../contest/Carousel.jsx'
 
 const BLANK = {
   title: '',
@@ -97,17 +98,33 @@ function Editor({ value, onChange, onSave, onDelete, onPreview, saving, isNew })
         mono
       />
 
-      {/* ------------------------------------------------------- 사진 */}
-      <Field label={`사진 (${value.images.length}장)`} hint="이미지 URL 을 순서대로 넣으면 카드에서 넘겨볼 수 있습니다.">
+      {/* ------------------------------------------------------- 미디어 (사진·영상) */}
+      <Field
+        label={`미디어 (${value.images.length}개)`}
+        hint="이미지 또는 MP4 영상 URL을 순서대로 넣으면 카드에서 넘겨볼 수 있습니다."
+      >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
           {value.images.map((url, i) => (
             <div className={s.imgRow} key={i}>
-              <img className={s.imgPreview} src={url || undefined} alt="" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
+              {/* 영상이면 video, 아니면 img 로 미리보기 */}
+              {isVideo(url) ? (
+                <video
+                  className={s.imgPreview}
+                  src={url || undefined}
+                  muted
+                  playsInline
+                  preload="none"
+                  style={{ background: '#111', objectFit: 'cover' }}
+                  onError={(e) => (e.currentTarget.style.opacity = 0.25)}
+                />
+              ) : (
+                <img className={s.imgPreview} src={url || undefined} alt="" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
+              )}
               <input
                 className="input input--mono"
                 value={url}
                 onChange={(e) => setImage(i, e.target.value)}
-                placeholder="https://..."
+                placeholder="https://... (.png / .jpg / .mp4 등)"
                 spellCheck={false}
               />
               <button className={s.iconBtn} onClick={() => moveImage(i, -1)} disabled={i === 0} title="위로">
@@ -125,9 +142,14 @@ function Editor({ value, onChange, onSave, onDelete, onPreview, saving, isNew })
               </button>
             </div>
           ))}
-          <button className="btn btn--outline btn--sm" style={{ alignSelf: 'flex-start' }} onClick={() => set('images', [...value.images, ''])}>
-            + 사진 추가
-          </button>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn btn--outline btn--sm" onClick={() => set('images', [...value.images, ''])}>
+              + 사진 추가
+            </button>
+            <button className="btn btn--outline btn--sm" onClick={() => set('images', [...value.images, ''])}>
+              + 영상 추가
+            </button>
+          </div>
         </div>
       </Field>
 
@@ -295,7 +317,18 @@ export default function Participants({ participants, api, toast, refresh }) {
                 </div>
 
                 {p.images[0] ? (
-                  <img className={s.pthumb} src={p.images[0]} alt="" />
+                  isVideo(p.images[0]) ? (
+                    <video
+                      className={s.pthumb}
+                      src={p.images[0]}
+                      muted
+                      playsInline
+                      preload="none"
+                      style={{ objectFit: 'cover', background: '#111' }}
+                    />
+                  ) : (
+                    <img className={s.pthumb} src={p.images[0]} alt="" />
+                  )
                 ) : (
                   <div className={`${s.pthumb} ${s.pthumbEmpty}`}>🖼️</div>
                 )}
@@ -308,7 +341,14 @@ export default function Participants({ participants, api, toast, refresh }) {
                   </div>
                   <div className={s.pcoords}>
                     {p.builderName ? `${p.builderName} · ` : ''}
-                    {p.coords.world} {p.coords.x} {p.coords.y} {p.coords.z} · 사진 {p.images.length}장
+                    {(() => {
+                      const imgs = p.images.filter((u) => !isVideo(u)).length
+                      const vids = p.images.filter((u) => isVideo(u)).length
+                      const parts = []
+                      if (imgs > 0) parts.push(`사진 ${imgs}장`)
+                      if (vids > 0) parts.push(`영상 ${vids}개`)
+                      return parts.length ? parts.join(' · ') : '미디어 없음'
+                    })()}
                   </div>
                 </button>
 

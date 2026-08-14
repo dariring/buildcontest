@@ -90,8 +90,7 @@ export default function Carousel({ images = [], alt = '', badge = null }) {
                     muted
                     loop
                     playsInline
-                    autoPlay={i === index}
-                    preload="metadata"
+                    preload="none"
                     onError={() => setBroken((b) => ({ ...b, [i]: true }))}
                   />
                   <span className={`${s.zoomHint} ${s.videoPlayHint}`}>
