@@ -122,49 +122,34 @@ npm start
 실행 후 브라우저에서 `http://localhost:3000` 에 접속하세요.  
 최초 어드민 설정은 `http://localhost:3000/admin` 에 접속하여 비밀번호를 지정한 후 진행합니다.
 
-### 새 서버에 한 번에 설치하기 (Ubuntu / Debian)
+### 새 서버에 올리기 (Ubuntu / Debian)
 
-VM 을 새로 만들었다면 아래 한 줄이면 Node 설치부터 서비스 등록까지 끝납니다.
+Node.js 20 이상만 있으면 됩니다. 시스템에 따로 등록할 것은 없습니다.
 
 ```bash
 git clone https://github.com/dariring/buildcontest.git
 cd buildcontest
-sudo ./scripts/install.sh --domain contest.example.com
+./scripts/setup.sh          # 의존성 설치 + 클라이언트 빌드 (sudo 불필요)
 ```
 
-스크립트가 하는 일:
+`scripts/setup.sh` 는 `npm ci` 와 `npm run build` 를 대신 돌려줄 뿐입니다. `npm install` 후 `npm start` 를 직접 쳐도 결과는 같습니다. (`npm start` 가 `prestart` 로 빌드를 먼저 돌립니다.)
 
-| 단계 | 내용 |
-|---|---|
-| 1 | Node.js 22 설치 (이미 20 이상이면 건너뜀) |
-| 2 | 로그인 불가 전용 계정 `buildcontest` 생성 |
-| 3 | `/opt/buildcontest` 에 소스 배치 → 의존성 설치 → 클라이언트 빌드 |
-| 4 | `data/` 를 `700` 으로 잠그고 실행 설정(`.env`) 작성 |
-| 5 | systemd 서비스 등록·기동 후 실제 응답까지 확인 |
-| 6 | cloudflared 설치 및 연결 안내 |
-
-Cloudflare Zero Trust 에서 커넥터 토큰을 미리 받아두었다면 터널 연결까지 한 번에 됩니다.
+**tmux 로 띄워두기**
 
 ```bash
-sudo ./scripts/install.sh --domain contest.example.com --cloudflared-token eyJhIjoi...
+tmux new -s contest
+HOST=127.0.0.1 BUILDCONTEST_TRUST_PROXY=1 BUILDCONTEST_PUBLIC_ORIGIN=https://contest.example.com npm start
+# Ctrl+B, D 로 빠져나오기
 ```
-
-주요 옵션은 `--port`, `--dir`, `--user`, `--branch`, `--skip-cloudflared` 이며 `--help` 로 전체를 볼 수 있습니다.
-
-> [!TIP]
-> **업데이트도 같은 명령입니다.** 다시 실행하면 최신 소스를 받아 다시 빌드하고 서비스를 재시작합니다. `data/` 와 `.env` 는 건드리지 않습니다.
-
-설치가 끝나면 아래 명령으로 다룹니다.
 
 ```bash
-sudo systemctl status buildcontest     # 상태
-sudo journalctl -u buildcontest -f     # 실시간 로그
-sudo systemctl restart buildcontest    # 재시작
-sudo nano /opt/buildcontest/.env       # 설정 변경 (변경 후 재시작)
+tmux attach -t contest      # 다시 붙기
 ```
+
+업데이트는 `git pull && ./scripts/setup.sh` 후 재시작하면 됩니다. `data/` 는 건드리지 않습니다.
 
 > [!WARNING]
-> 터널을 연결한 직후 바로 `/admin` 에 접속해 관리자 비밀번호를 정하세요. **먼저 접속한 사람이 관리자가 됩니다.**
+> 서버를 공개한 직후 바로 `/admin` 에 접속해 관리자 비밀번호를 정하세요. **먼저 접속한 사람이 관리자가 됩니다.**
 
 ---
 
@@ -287,7 +272,6 @@ buildcontest/
 ## ☁️ Cloudflare Tunnel 로 공개하기
 
 포트 개방이나 공인 IP 없이 서비스할 수 있고, HTTPS 인증서도 Cloudflare 가 처리합니다.
-아래는 수동 설정 기준이며, [설치 스크립트](#새-서버에-한-번에-설치하기-ubuntu--debian)를 쓰면 이 과정이 자동으로 처리됩니다.
 
 **1. 터널 설정** (`~/.cloudflared/config.yml`)
 
