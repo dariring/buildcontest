@@ -196,7 +196,7 @@ export default function Home() {
           : !linked
             ? config.link.guideText || '먼저 계정을 연동한 뒤 참여해주세요.'
             : state.link.mcName || state.link.uuid
-              ? `${state.link.mcName ?? state.link.uuid} 로 연동되어 있습니다.`
+              ? `${state.link.mcName ?? state.link.uuid} 계정과 연동되어 있습니다.`
               : '연동 확인을 건너뛰는 중입니다.',
       done: loggedIn && linked,
       action:
