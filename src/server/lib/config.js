@@ -63,6 +63,7 @@ export const DEFAULT_CONFIG = {
     allowSelfVote: false,
     allowRevote: true,
     showResultsPublicly: false,
+    hideBeforeVoting: false, // 투표 시작 전 참가작 목록 비공개
   },
 }
 
@@ -213,6 +214,7 @@ export function publicConfig(config = getConfig()) {
       allowSelfVote: config.vote.allowSelfVote,
       allowRevote: config.vote.allowRevote,
       showResultsPublicly: config.vote.showResultsPublicly,
+      hideBeforeVoting: config.vote.hideBeforeVoting,
     },
     discord: {
       guildInviteUrl: config.discord.guildInviteUrl,

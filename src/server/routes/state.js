@@ -28,9 +28,17 @@ router.get(
     const window = votingWindow(config)
     const user = getUserSession(req)
 
+    // 투표 시작 전 비공개 설정이 켜져 있고, 아직 투표가 열리지 않은 상태면
+    // 참가작 목록을 공개하지 않습니다.
+    const hiddenByPolicy =
+      config.vote.hideBeforeVoting &&
+      !window.open &&
+      (window.reason === 'before' || window.reason === 'unscheduled')
+
     const state = {
       config: pub,
-      participants,
+      participants: hiddenByPolicy ? [] : participants,
+      participantsHidden: hiddenByPolicy,
       voting: window,
       user: null,
       link: null,

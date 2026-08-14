@@ -406,6 +406,12 @@ export function VotePanel({ config, save }) {
           checked={d.showResultsPublicly}
           onChange={(v) => set('showResultsPublicly', v)}
         />
+        <Toggle
+          label="투표 시작 전 참가작 비공개"
+          hint="켜면 투표가 시작될 때까지 공모전 페이지에서 참가작 목록이 보이지 않습니다."
+          checked={d.hideBeforeVoting}
+          onChange={(v) => set('hideBeforeVoting', v)}
+        />
       </div>
       <Actions onSave={() => run({ vote: d })} saving={saving} saved={saved} />
     </Panel>

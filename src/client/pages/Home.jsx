@@ -86,6 +86,7 @@ export default function Home() {
 
   const config = state?.config
   const participants = state?.participants ?? []
+  const participantsHidden = Boolean(state?.participantsHidden)
   const visited = useMemo(() => new Set(state?.progress?.visited ?? []), [state])
   const maxVotes = config?.vote?.maxVotes ?? 3
 
@@ -372,8 +373,10 @@ export default function Home() {
               <div>
                 <h2 className={s.sectionTitle}>참가작</h2>
                 <p className={s.sectionSub}>
-                  {total}개의 건축물
-                  {loggedIn && linked && config.teleport.requireAllBeforeVote && ` · ${visitedCount}개 방문함`}
+                  {participantsHidden
+                    ? '투표 시작 전까지 비공개입니다.'
+                    : `${total}개의 건축물${loggedIn && linked && config.teleport.requireAllBeforeVote ? ` · ${visitedCount}개 방문함` : ''}`
+                  }
                 </p>
               </div>
               {submitted && !editing && (
@@ -383,7 +386,17 @@ export default function Home() {
               )}
             </div>
 
-            {total === 0 ? (
+            {participantsHidden ? (
+              <div className={s.empty}>
+                <span className={s.emptyEmoji}>🔒</span>
+                투표가 시작되기 전까지 참가작은 공개되지 않습니다.
+                {state?.voting?.reason === 'before' && state?.voting?.startAt && (
+                  <p style={{ marginTop: 10, fontSize: 14, color: 'var(--text-2)' }}>
+                    {formatDate(state.voting.startAt)}에 공개됩니다.
+                  </p>
+                )}
+              </div>
+            ) : total === 0 ? (
               <div className={s.empty}>
                 <span className={s.emptyEmoji}>🏗️</span>
                 아직 등록된 참가작이 없어요. 곧 채워집니다.
