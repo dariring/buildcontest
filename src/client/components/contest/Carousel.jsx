@@ -1,9 +1,7 @@
-'use client'
-
 import { useEffect, useRef, useState } from 'react'
 import s from './contest.module.css'
-import Lightbox from './Lightbox.js'
-import { ChevronLeft, ChevronRight, Expand, Photo } from './icons.js'
+import Lightbox from './Lightbox.jsx'
+import { ChevronLeft, ChevronRight, Expand, Photo } from './icons.jsx'
 
 export default function Carousel({ images = [], alt = '', badge = null }) {
   const [index, setIndex] = useState(0)
@@ -76,7 +74,6 @@ export default function Carousel({ images = [], alt = '', badge = null }) {
                   tabIndex={i === index ? 0 : -1}
                 >
                   {/* 참가자가 넣는 임의 URL이라 최적화 없이 그대로 씁니다. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
                     alt=""

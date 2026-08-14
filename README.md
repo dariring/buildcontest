@@ -6,7 +6,8 @@
   <b>마인크래프트 서버와 연동되는 올인원 건축 공모전 & 투표 웹 플랫폼</b>
 </p>
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Express](https://img.shields.io/badge/Express-4.21-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Discord.js](https://img.shields.io/badge/Discord.js-14.16-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.js.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520.9.0-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -121,6 +122,50 @@ npm start
 실행 후 브라우저에서 `http://localhost:3000` 에 접속하세요.  
 최초 어드민 설정은 `http://localhost:3000/admin` 에 접속하여 비밀번호를 지정한 후 진행합니다.
 
+### 새 서버에 한 번에 설치하기 (Ubuntu / Debian)
+
+VM 을 새로 만들었다면 아래 한 줄이면 Node 설치부터 서비스 등록까지 끝납니다.
+
+```bash
+git clone https://github.com/dariring/buildcontest.git
+cd buildcontest
+sudo ./scripts/install.sh --domain contest.example.com
+```
+
+스크립트가 하는 일:
+
+| 단계 | 내용 |
+|---|---|
+| 1 | Node.js 22 설치 (이미 20 이상이면 건너뜀) |
+| 2 | 로그인 불가 전용 계정 `buildcontest` 생성 |
+| 3 | `/opt/buildcontest` 에 소스 배치 → 의존성 설치 → 클라이언트 빌드 |
+| 4 | `data/` 를 `700` 으로 잠그고 실행 설정(`.env`) 작성 |
+| 5 | systemd 서비스 등록·기동 후 실제 응답까지 확인 |
+| 6 | cloudflared 설치 및 연결 안내 |
+
+Cloudflare Zero Trust 에서 커넥터 토큰을 미리 받아두었다면 터널 연결까지 한 번에 됩니다.
+
+```bash
+sudo ./scripts/install.sh --domain contest.example.com --cloudflared-token eyJhIjoi...
+```
+
+주요 옵션은 `--port`, `--dir`, `--user`, `--branch`, `--skip-cloudflared` 이며 `--help` 로 전체를 볼 수 있습니다.
+
+> [!TIP]
+> **업데이트도 같은 명령입니다.** 다시 실행하면 최신 소스를 받아 다시 빌드하고 서비스를 재시작합니다. `data/` 와 `.env` 는 건드리지 않습니다.
+
+설치가 끝나면 아래 명령으로 다룹니다.
+
+```bash
+sudo systemctl status buildcontest     # 상태
+sudo journalctl -u buildcontest -f     # 실시간 로그
+sudo systemctl restart buildcontest    # 재시작
+sudo nano /opt/buildcontest/.env       # 설정 변경 (변경 후 재시작)
+```
+
+> [!WARNING]
+> 터널을 연결한 직후 바로 `/admin` 에 접속해 관리자 비밀번호를 정하세요. **먼저 접속한 사람이 관리자가 됩니다.**
+
 ---
 
 ## 🛠️ 어드민 설정 가이드
@@ -181,11 +226,19 @@ BuildContest는 별도의 DB 서버 구축 없이 `data/` 디렉터리에 JSON �
 ```
 buildcontest/
 ├── public/                 # 로고, 파비콘 및 정적 에셋
+├── index.html              # SPA 진입 문서 (제목·색상은 서버가 채웁니다)
+├── vite.config.js          # 클라이언트 번들 설정
 ├── src/
-│   ├── app/                # Next.js App Router (페이지 및 API 라우트)
-│   │   ├── admin/          # 어드민 관리자 패널
-│   │   └── api/            # OAuth2, Teleport, ConnectCheck API 등
-│   └── components/         # UI 컴포넌트
+│   ├── client/             # Vite + React 프론트엔드
+│   │   ├── main.jsx        # 진입점 (경로에 따라 Home / Admin 렌더)
+│   │   ├── pages/          # Home(공모전), Admin(관리자 패널)
+│   │   └── components/     # UI 컴포넌트
+│   └── server/             # Express 백엔드
+│       ├── index.js        # 서버 진입점 (API + 정적 파일 + SPA 폴백)
+│       ├── html.js         # index.html 에 설정값 주입
+│       ├── routes/         # auth, state, vote, teleport, admin
+│       └── lib/            # 설정, 저장소, 세션, 디스코드 봇, 연동 API
+├── dist/                   # 빌드 결과물 (Git 제외 대상)
 ├── data/                   # ⚠️ 영구 데이터 저장소 (Git 제외 대상)
 │   ├── config.json         # 시스템 설정, 어드민 암호 해시, 세션 키
 │   ├── participants.json   # 공모전 참가작 정보
@@ -214,8 +267,60 @@ buildcontest/
 ## ⚙️ 배포 및 환경 설정 팁
 
 - **포트 변경**: `PORT=4000 npm start`
+- **바인딩 주소 변경**: `HOST=127.0.0.1 npm start` (기본값은 `0.0.0.0`)
 - **데이터 폴더 경로 변경**: `BUILDCONTEST_DATA_DIR=/custom/path npm start`
 - **리버스 프록시 (HTTPS)**: NGINX / Cloudflare 등을 이용해 HTTPS를 적용하고, 디스코드 개발자 포털의 Redirect URI와 어드민의 **리디렉션 URL**을 실제 도메인 주소로 맞춰주어야 디스코드 로그인이 정상 작동합니다.
+- **프록시 뒤에 둘 때는 `BUILDCONTEST_TRUST_PROXY=1 npm start`**: 이 값을 켜야 세션 쿠키에 `Secure` 가 붙고, 로그인 시도 제한이 프록시 IP 하나가 아니라 실제 접속자별로 계산됩니다. 프록시 없이 서버를 직접 노출하는 경우에는 절대 켜지 마세요. 접속자가 헤더를 위조해 IP를 속일 수 있습니다.
+
+### 환경 변수 정리
+
+| 변수 | 기본값 | 설명 |
+|---|---|---|
+| `PORT` | `3000` | 수신 포트 |
+| `HOST` | `0.0.0.0` | 바인딩 주소. 터널/프록시를 쓴다면 `127.0.0.1` 로 좁히세요 |
+| `BUILDCONTEST_DATA_DIR` | `./data` | 데이터 저장 폴더 |
+| `BUILDCONTEST_TRUST_PROXY` | (꺼짐) | 프록시 뒤일 때 `1`. `x-forwarded-*` 를 신뢰합니다 |
+| `BUILDCONTEST_PUBLIC_ORIGIN` | (자동) | 밖에서 보이는 실제 주소. 프록시가 Host 헤더를 바꿔서 넘길 때 지정 |
+
+---
+
+## ☁️ Cloudflare Tunnel 로 공개하기
+
+포트 개방이나 공인 IP 없이 서비스할 수 있고, HTTPS 인증서도 Cloudflare 가 처리합니다.
+아래는 수동 설정 기준이며, [설치 스크립트](#새-서버에-한-번에-설치하기-ubuntu--debian)를 쓰면 이 과정이 자동으로 처리됩니다.
+
+**1. 터널 설정** (`~/.cloudflared/config.yml`)
+
+```yaml
+tunnel: <터널 ID>
+credentials-file: /경로/<터널 ID>.json
+
+ingress:
+  - hostname: contest.example.com
+    service: http://127.0.0.1:3000
+  - service: http_status:404
+```
+
+> [!IMPORTANT]
+> `httpHostHeader` 는 설정하지 마세요. 이 값을 넣으면 브라우저가 보낸 `Origin` 과 서버가 받는 `Host` 가 서로 달라져, 위조 요청을 걸러내는 출처 검사에 정상 요청까지 막힙니다(모든 저장·투표가 403). 꼭 써야 한다면 아래 `BUILDCONTEST_PUBLIC_ORIGIN` 을 함께 지정하세요.
+
+**2. 앱 실행**
+
+```bash
+HOST=127.0.0.1 BUILDCONTEST_TRUST_PROXY=1 BUILDCONTEST_PUBLIC_ORIGIN=https://contest.example.com npm start
+```
+
+- `HOST=127.0.0.1` — 터널을 통해서만 접근할 수 있게 막습니다. 이걸 빼면 같은 네트워크에서 Cloudflare 를 우회해 직접 접속할 수 있고, 그 경로로 들어온 요청은 접속자 IP 위조도 가능해집니다.
+- `BUILDCONTEST_TRUST_PROXY=1` — Cloudflare 가 붙여주는 실제 접속자 IP와 `https` 정보를 신뢰합니다. 켜야 세션 쿠키에 `Secure` 가 붙고 로그인 시도 제한이 접속자별로 계산됩니다.
+- `BUILDCONTEST_PUBLIC_ORIGIN` — 출처 검사와 디스코드 콜백 주소의 기준을 공개 도메인으로 고정합니다. `Host` 헤더를 위조해도 콜백 주소가 바뀌지 않습니다.
+
+**3. 디스코드 설정**
+
+Discord Developer Portal → OAuth2 → Redirects 에 `https://contest.example.com/api/auth/callback` 을 등록합니다. 어드민의 **리디렉션 URL** 은 비워두면 위 공개 주소 기준으로 자동 생성됩니다.
+
+**4. 캐시**
+
+앱이 알아서 헤더를 내려주므로 Cloudflare 쪽에 따로 설정할 것은 없습니다. 해시가 붙은 정적 파일(`/assets/*`)은 1년 캐시로 엣지에 얹히고, HTML 과 모든 API 응답은 `no-store` 라 캐시되지 않습니다. 다만 Cache Rules 에서 **Cache Everything 을 켜지 마세요.** 로그인한 사람의 페이지가 다른 사람에게 그대로 나갈 수 있습니다.
 
 ---
 

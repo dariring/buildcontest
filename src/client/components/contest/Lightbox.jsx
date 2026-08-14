@@ -1,9 +1,7 @@
-'use client'
-
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import s from './contest.module.css'
-import { ChevronLeft, ChevronRight, Close } from './icons.js'
+import { ChevronLeft, ChevronRight, Close } from './icons.jsx'
 
 /**
  * 사진 크게 보기. 배경·닫기 버튼·ESC 로 닫히고 ←/→ 로 넘깁니다.
@@ -63,7 +61,11 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
     touch.current = null
   }
 
-  if (!mounted) return null
+  if (!mounted || count === 0) return null
+
+  // 사진이 열려 있는 동안 하나가 깨져서 목록이 줄어들면 index 가 범위를 벗어납니다.
+  // 그대로 두면 src 가 undefined 인 빈 이미지가 뜹니다.
+  const safeIndex = Math.min(Math.max(0, index), count - 1)
 
   // 카드가 overflow:hidden + hover transform 이라 그 안에 두면 잘립니다.
   // body 로 옮겨야 화면 전체를 덮을 수 있습니다.
@@ -109,12 +111,11 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
       )}
 
       {/* 클릭이 배경으로 새어나가지 않도록 사진 영역은 이벤트를 막습니다. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        key={images[index]}
+        key={images[safeIndex]}
         className={`${s.lbImage} ${loaded ? s.lbImageIn : ''}`}
-        src={images[index]}
-        alt={`${title} ${index + 1}번째 사진`}
+        src={images[safeIndex]}
+        alt={`${title} ${safeIndex + 1}번째 사진`}
         onClick={(e) => e.stopPropagation()}
         onLoad={() => setLoaded(true)}
         draggable={false}
@@ -124,7 +125,7 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
         <span className={s.lbTitle}>{title}</span>
         {count > 1 && (
           <span className={s.lbCounter}>
-            {index + 1} / {count}
+            {safeIndex + 1} / {count}
           </span>
         )}
       </div>

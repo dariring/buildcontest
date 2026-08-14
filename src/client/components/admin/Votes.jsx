@@ -1,7 +1,5 @@
-'use client'
-
 import s from './admin.module.css'
-import { Panel } from './ui.js'
+import { Panel } from './ui.jsx'
 
 function when(ts) {
   return new Date(ts).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -95,7 +93,6 @@ export default function Votes({ votes, api, toast, refresh }) {
                   <tr key={v.discordId}>
                     <td>
                       <div className={s.voterCell}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         {v.avatar && <img src={v.avatar} alt="" />}
                         <div>
                           <div style={{ fontWeight: 500 }}>{v.displayName}</div>

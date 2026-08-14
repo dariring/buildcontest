@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      __BC_* 자리는 서버가 요청마다 현재 설정으로 채웁니다. (src/server/html.js)
+      제목이 자바스크립트를 기다리지 않고 첫 응답에 바로 실려 나가도록 하기 위함입니다.
+    -->
+    <link rel="icon" href="__BC_ICON__" />
+    <title>__BC_TITLE__</title>
+    <meta name="description" content="__BC_DESCRIPTION__" />
+    <style>
+      :root {
+        --accent: __BC_ACCENT__;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/client/main.jsx"></script>
+  </body>
+</html>

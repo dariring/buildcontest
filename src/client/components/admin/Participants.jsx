@@ -1,8 +1,6 @@
-'use client'
-
 import { useState } from 'react'
 import s from './admin.module.css'
-import { Area, Field, Panel, Text, Toggle } from './ui.js'
+import { Area, Field, Panel, Text, Toggle } from './ui.jsx'
 
 const BLANK = {
   title: '',
@@ -104,7 +102,6 @@ function Editor({ value, onChange, onSave, onDelete, onPreview, saving, isNew })
         <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
           {value.images.map((url, i) => (
             <div className={s.imgRow} key={i}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className={s.imgPreview} src={url || undefined} alt="" onError={(e) => (e.currentTarget.style.opacity = 0.25)} />
               <input
                 className="input input--mono"
@@ -298,7 +295,6 @@ export default function Participants({ participants, api, toast, refresh }) {
                 </div>
 
                 {p.images[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img className={s.pthumb} src={p.images[0]} alt="" />
                 ) : (
                   <div className={`${s.pthumb} ${s.pthumbEmpty}`}>🖼️</div>

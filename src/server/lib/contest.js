@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { read, write, update } from './store.js'
-import { getConfig } from './config.js'
+import { getConfig, safeUrl } from './config.js'
 
 // ------------------------------------------------------------ participants
 
@@ -18,29 +18,49 @@ export const EMPTY_PARTICIPANT = {
   hidden: false,
 }
 
+/**
+ * 월드 이름도 결국 콘솔 명령 한복판에 들어갑니다.
+ * 마인크래프트에서 쓸 수 있는 글자만 남기고, 남는 게 없으면 'world' 로 되돌립니다.
+ */
+export function safeWorld(value) {
+  const cleaned = String(value ?? '')
+    .trim()
+    .replace(/[^A-Za-z0-9_\-.]/g, '')
+    .slice(0, 64)
+  return cleaned || 'world'
+}
+
+function toArray(value) {
+  return Array.isArray(value) ? value : []
+}
+
 function normalizeParticipant(input, existing = null) {
   const base = existing ?? { ...EMPTY_PARTICIPANT, id: randomUUID(), createdAt: Date.now() }
-  const coords = { ...base.coords, ...(input.coords ?? {}) }
+  // 어드민이 보낸 JSON 이라도 형태가 어긋나면 500 이 나므로 여기서 모양을 잡아둡니다.
+  const patch = input && typeof input === 'object' && !Array.isArray(input) ? input : {}
+  const rawCoords = patch.coords && typeof patch.coords === 'object' && !Array.isArray(patch.coords) ? patch.coords : {}
+  const coords = { ...base.coords, ...rawCoords }
+  const images = patch.images === undefined ? toArray(base.images) : toArray(patch.images)
+
   return {
     ...base,
-    title: String(input.title ?? base.title ?? '').trim(),
-    description: String(input.description ?? base.description ?? ''),
-    builderName: String(input.builderName ?? base.builderName ?? '').trim(),
-    builderDiscordId: String(input.builderDiscordId ?? base.builderDiscordId ?? '').trim(),
-    anonymous: Boolean(input.anonymous ?? base.anonymous ?? false),
-    images: (input.images ?? base.images ?? [])
-      .map((url) => String(url).trim())
-      .filter(Boolean),
+    title: String(patch.title ?? base.title ?? '').trim(),
+    description: String(patch.description ?? base.description ?? ''),
+    builderName: String(patch.builderName ?? base.builderName ?? '').trim(),
+    builderDiscordId: String(patch.builderDiscordId ?? base.builderDiscordId ?? '').trim(),
+    anonymous: Boolean(patch.anonymous ?? base.anonymous ?? false),
+    // 사진 주소도 그대로 <img src> 가 됩니다. 설정값과 같은 기준으로 걸러냅니다.
+    images: images.map((url) => safeUrl(url)).filter(Boolean),
     coords: {
-      world: String(coords.world ?? 'world').trim() || 'world',
+      world: safeWorld(coords.world),
       x: Number(coords.x) || 0,
       y: Number(coords.y) || 0,
       z: Number(coords.z) || 0,
       yaw: Number(coords.yaw) || 0,
       pitch: Number(coords.pitch) || 0,
     },
-    commandOverride: String(input.commandOverride ?? base.commandOverride ?? '').trim(),
-    hidden: Boolean(input.hidden ?? base.hidden ?? false),
+    commandOverride: String(patch.commandOverride ?? base.commandOverride ?? '').trim(),
+    hidden: Boolean(patch.hidden ?? base.hidden ?? false),
     updatedAt: Date.now(),
   }
 }
@@ -75,10 +95,14 @@ export function updateParticipant(id, input) {
 export function deleteParticipant(id) {
   update('participants', [], (list) => list.filter((p) => p.id !== id))
   // 이미 들어온 표에서도 제거해 집계가 어긋나지 않게 합니다.
+  // 고른 게 하나도 남지 않은 투표는 통째로 지웁니다. 남겨두면 참여자 수에는
+  // 잡히는데 표는 0인 유령 투표가 되고, 그 사람은 다시 투표할 수도 없습니다.
   update('votes', {}, (votes) => {
     const next = {}
     for (const [key, entry] of Object.entries(votes)) {
-      next[key] = { ...entry, picks: entry.picks.filter((pid) => pid !== id) }
+      const picks = (entry.picks ?? []).filter((pid) => pid !== id)
+      if (picks.length === 0) continue
+      next[key] = { ...entry, picks }
     }
     return next
   })
@@ -203,23 +227,38 @@ export function votingWindow(config = getConfig()) {
 
 // -------------------------------------------------------- teleport command
 
-const SAFE_PLAYER = /^[A-Za-z0-9_]{1,32}$/
+const SAFE_PLAYER = /^[A-Za-z0-9_]{1,16}$/
+const SAFE_UUID = /^[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}$/
+
+/** 명령어에 끼워 넣어도 안전한 UUID 만 통과시킵니다. 아니면 null. */
+export function safeUuid(value) {
+  const raw = String(value ?? '').trim()
+  return SAFE_UUID.test(raw) ? raw : null
+}
 
 export function buildTeleportCommand(participant, playerName, uuid) {
   const config = getConfig()
   const template = participant.commandOverride?.trim() || config.teleport.commandTemplate
   const { coords } = participant
 
-  // 콘솔 채널로 그대로 흘러가는 문자열이라 플레이어 식별자는 엄격히 제한합니다.
+  // 이 문자열은 DiscordSRV 콘솔 채널로 그대로 흘러가 서버 명령으로 실행됩니다.
+  // 그러니 바깥에서 들어온 값(마인크래프트 닉네임, 연동 API 가 준 UUID)은
+  // 하나도 빠짐없이 형식 검사를 통과한 것만 씁니다. 공백 하나만 새어 들어가도
+  // 뒤에 인자를 덧붙여 다른 명령을 실행시킬 수 있습니다.
   const player = SAFE_PLAYER.test(playerName ?? '') ? playerName : null
-  if (!player && !uuid) throw new Error('플레이어 이름 또는 UUID를 확인할 수 없습니다.')
+  const id = safeUuid(uuid)
+  if (!player && !id) throw new Error('플레이어 이름 또는 UUID를 확인할 수 없습니다.')
 
-  const num = (n) => (Number.isInteger(n) ? String(n) : String(Number(n.toFixed(2))))
+  const num = (n) => {
+    const value = Number(n)
+    if (!Number.isFinite(value)) return '0'
+    return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(2)))
+  }
 
   return template
-    .replaceAll('{player}', player ?? String(uuid))
-    .replaceAll('{uuid}', String(uuid ?? ''))
-    .replaceAll('{world}', coords.world)
+    .replaceAll('{player}', player ?? id)
+    .replaceAll('{uuid}', id ?? '')
+    .replaceAll('{world}', safeWorld(coords.world))
     .replaceAll('{x}', num(coords.x))
     .replaceAll('{y}', num(coords.y))
     .replaceAll('{z}', num(coords.z))

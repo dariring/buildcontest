@@ -1,7 +1,5 @@
-'use client'
-
 import s from './admin.module.css'
-import { Panel } from './ui.js'
+import { Panel } from './ui.jsx'
 
 function Stat({ label, value, note }) {
   return (

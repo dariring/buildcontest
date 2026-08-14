@@ -1,19 +1,26 @@
 {
   "name": "buildcontest",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "prestart": "next build",
-    "start": "next start"
+    "dev": "cross-env NODE_ENV=development node --watch src/server/index.js",
+    "build": "vite build",
+    "start": "node src/server/index.js",
+    "prestart": "npm run build"
   },
   "dependencies": {
+    "compression": "^1.7.5",
+    "cookie-parser": "^1.4.7",
     "discord.js": "^14.16.3",
-    "next": "^15.5.4",
+    "express": "^4.21.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^7.0.3",
+    "vite": "^6.0.7"
   },
   "engines": {
     "node": ">=20.9.0"

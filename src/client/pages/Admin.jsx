@@ -1,12 +1,10 @@
-'use client'
-
 import { useCallback, useEffect, useState } from 'react'
 import s from '@/components/admin/admin.module.css'
-import Dashboard from '@/components/admin/Dashboard.js'
-import Participants from '@/components/admin/Participants.js'
-import Votes from '@/components/admin/Votes.js'
-import Reset from '@/components/admin/Reset.js'
-import { ContestPanel, DiscordPanel, LinkPanel, SecurityPanel, TeleportPanel, VotePanel } from '@/components/admin/Settings.js'
+import Dashboard from '@/components/admin/Dashboard.jsx'
+import Participants from '@/components/admin/Participants.jsx'
+import Votes from '@/components/admin/Votes.jsx'
+import Reset from '@/components/admin/Reset.jsx'
+import { ContestPanel, DiscordPanel, LinkPanel, SecurityPanel, TeleportPanel, VotePanel } from '@/components/admin/Settings.jsx'
 
 const TABS = [
   { id: 'dashboard', label: '대시보드' },
@@ -55,7 +53,6 @@ function Gate({ setupComplete, onIn, logoUrl }) {
   return (
     <div className={s.gate}>
       <form className={s.gateCard} onSubmit={submit}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={s.gateLogo} src={logoUrl || '/logo.png'} alt="" />
         <h1 className={s.gateTitle}>{firstRun ? '처음 오셨네요' : '관리자'}</h1>
         <p className={s.gateSub}>
@@ -204,7 +201,6 @@ export default function AdminPage() {
       <div className={s.top}>
         <div className={`shell ${s.topInner}`}>
           <span className={s.topTitle}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className={s.topLogo} src={config.contest.logoUrl || '/logo.png'} alt="" />
             <span className={s.topName}>{config.title}</span>
             <span className="pill">관리자</span>

@@ -1,9 +1,7 @@
-'use client'
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import s from '@/components/contest/contest.module.css'
-import ParticipantRow from '@/components/contest/ParticipantRow.js'
-import { ArrowDown, Check, Discord, Link as LinkIcon, Vote } from '@/components/contest/icons.js'
+import ParticipantRow from '@/components/contest/ParticipantRow.jsx'
+import { ArrowDown, Check, Discord, Link as LinkIcon, Vote } from '@/components/contest/icons.jsx'
 
 const LOGIN_ERRORS = {
   discord_not_configured: '디스코드 로그인이 아직 설정되지 않았습니다. 관리자에게 문의해주세요.',
@@ -32,6 +30,14 @@ function useCountdown(iso) {
   if (d > 0) return `${d}일 ${h}시간`
   if (h > 0) return `${h}시간 ${m}분`
   return `${m}분 ${sec}초`
+}
+
+/**
+ * CSS url("...") 안에 넣어도 문자열 밖으로 빠져나가지 못하게 합니다.
+ * 배경 주소는 어드민이 자유롭게 적는 값이라 따옴표가 섞여 들어올 수 있습니다.
+ */
+function cssUrl(value) {
+  return String(value).replace(/[\\"]/g, '\\$&').replace(/[\r\n]/g, '')
 }
 
 function formatDate(iso) {
@@ -112,6 +118,13 @@ export default function Home() {
     },
     [flash, load, state],
   )
+
+  // 로그아웃은 상태를 바꾸는 동작이라 POST 로 보냅니다.
+  // 링크(GET)로 두면 다른 사이트가 이미지 한 장으로 우리 사용자를 로그아웃시킬 수 있습니다.
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    window.location.href = '/'
+  }
 
   function togglePick(id) {
     setPicks((current) => {
@@ -244,7 +257,6 @@ export default function Home() {
         <div className={`shell ${s.navInner}`}>
           <a className={s.navBrand} href="#top">
             {config.contest.logoUrl && (
-              /* eslint-disable-next-line @next/next/no-img-element */
               <img className={s.navLogo} src={config.contest.logoUrl} alt="" />
             )}
             <span className={s.navBrandLabel}>{config.contest.serverName || config.title}</span>
@@ -253,13 +265,12 @@ export default function Home() {
             {loggedIn ? (
               <>
                 <span className={s.userChip}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={state.user.avatar} alt="" />
                   <span className={s.userChipName}>{state.link?.mcName || state.user.displayName}</span>
                 </span>
-                <a className="btn btn--ghost btn--sm" href="/api/auth/logout">
+                <button className="btn btn--ghost btn--sm" onClick={logout}>
                   로그아웃
-                </a>
+                </button>
               </>
             ) : (
               <a className="btn btn--primary btn--sm" href="/api/auth/login">
@@ -278,7 +289,7 @@ export default function Home() {
               <div
                 className={s.heroBg}
                 style={{
-                  backgroundImage: `url("${heroBg}")`,
+                  backgroundImage: `url("${cssUrl(heroBg)}")`,
                   filter: `blur(${Math.max(0, Number(config.contest.backgroundBlur) || 0)}px)`,
                 }}
               />

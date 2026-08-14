@@ -3,6 +3,8 @@ import { read, write } from './store.js'
 
 const TTL = 1000 * 60 * 60 * 12 // 12시간
 
+const HEX32 = /^[0-9a-f]{32}$/
+
 function normalize(uuid) {
   return String(uuid).replace(/-/g, '').toLowerCase()
 }
@@ -10,6 +12,9 @@ function normalize(uuid) {
 export async function resolveName(uuid) {
   if (!uuid) return null
   const key = normalize(uuid)
+  // 이 값은 외부 연동 API 가 준 것이고 아래에서 URL 경로에 그대로 붙습니다.
+  // 형식이 어긋나면 다른 주소로 요청이 나갈 수 있으니 여기서 끊습니다.
+  if (!HEX32.test(key)) return null
   const cache = read('namecache', {})
   const hit = cache[key]
   if (hit && Date.now() - hit.at < TTL) return hit.name
@@ -37,6 +42,8 @@ export async function resolveName(uuid) {
 
 /** 어드민에서 직접 닉네임을 박아 넣을 때 사용. */
 export function setName(uuid, name) {
+  const key = normalize(uuid)
+  if (!HEX32.test(key)) return
   const cache = read('namecache', {})
-  write('namecache', { ...cache, [normalize(uuid)]: { name, at: Date.now() } })
+  write('namecache', { ...cache, [key]: { name, at: Date.now() } })
 }

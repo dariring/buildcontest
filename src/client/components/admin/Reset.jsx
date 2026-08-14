@@ -1,8 +1,6 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import s from './admin.module.css'
-import { Panel, Toggle } from './ui.js'
+import { Panel, Toggle } from './ui.jsx'
 
 const DEFAULTS = {
   archive: true,

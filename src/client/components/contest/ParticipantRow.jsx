@@ -1,9 +1,7 @@
-'use client'
-
 import { useState } from 'react'
 import s from './contest.module.css'
-import Carousel from './Carousel.js'
-import { Check, Teleport } from './icons.js'
+import Carousel from './Carousel.jsx'
+import { Check, Teleport } from './icons.jsx'
 
 export default function ParticipantRow({
   participant,

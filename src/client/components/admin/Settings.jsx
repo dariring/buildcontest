@@ -1,8 +1,6 @@
-'use client'
-
 import { useState } from 'react'
 import s from './admin.module.css'
-import { Actions, Area, Field, Num, Panel, Secret, Text, Toggle, useDraft } from './ui.js'
+import { Actions, Area, Field, Num, Panel, Secret, Text, Toggle, useDraft } from './ui.jsx'
 
 /** 저장 버튼 하나를 굴리는 공통 상태. */
 function useSaver(save) {
@@ -97,7 +95,6 @@ export function ContestPanel({ config, save }) {
           </p>
         </div>
         {d.logoUrl && (
-          /* eslint-disable-next-line @next/next/no-img-element */
           <img src={d.logoUrl} alt="" style={{ height: 44, width: 'auto', objectFit: 'contain' }} />
         )}
       </div>

@@ -6,6 +6,7 @@
 // 두 방향을 모두 제공합니다. 디스코드 로그인으로 시작하므로 기본값은
 // connectcheck 이지만, 어드민에서 경로를 바꿀 수 있게 열어두었습니다.
 import { getConfig } from './config.js'
+import { safeUuid } from './contest.js'
 
 function joinUrl(base, path) {
   return `${String(base).replace(/\/+$/, '')}/${String(path).replace(/^\/+/, '')}`
@@ -55,10 +56,15 @@ export async function checkLink(discordId) {
     if (!res.ok) return { linked: false, uuid: null, error: `연동 API 오류 (${res.status})` }
 
     const data = await res.json().catch(() => ({}))
-    const uuid = data.uuid ?? data.UUID ?? data.minecraftUuid ?? null
-    if (!uuid) return { linked: false, uuid: null, error: null }
+    const raw = data.uuid ?? data.UUID ?? data.minecraftUuid ?? null
+    if (!raw) return { linked: false, uuid: null, error: null }
 
-    const result = { linked: true, uuid: String(uuid), error: null }
+    // 이 UUID 는 나중에 콘솔 명령과 Mojang 조회 주소에 그대로 들어갑니다.
+    // 연동 API 는 우리가 만든 게 아니니, 경계에서 형식을 확인하고 들여보냅니다.
+    const uuid = safeUuid(raw)
+    if (!uuid) return { linked: false, uuid: null, error: '연동 API 가 올바르지 않은 UUID 를 반환했습니다.' }
+
+    const result = { linked: true, uuid, error: null }
     hits.set(key, { result, at: Date.now() })
     return result
   } catch (err) {

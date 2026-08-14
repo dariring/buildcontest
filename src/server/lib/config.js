@@ -66,10 +66,15 @@ export const DEFAULT_CONFIG = {
   },
 }
 
+// 병합 대상에서 무조건 빼야 하는 키. JSON.parse 는 "__proto__" 를 자기 속성으로
+// 만들어 주기 때문에, 걸러내지 않으면 요청 본문으로 객체의 프로토타입을 건드릴 수 있습니다.
+const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
 function deepMerge(base, override) {
   if (!override || typeof override !== 'object' || Array.isArray(override)) return base
   const out = Array.isArray(base) ? [...base] : { ...base }
   for (const [key, value] of Object.entries(override)) {
+    if (FORBIDDEN_KEYS.has(key)) continue
     if (value && typeof value === 'object' && !Array.isArray(value) && typeof base?.[key] === 'object') {
       out[key] = deepMerge(base[key], value)
     } else if (value !== undefined) {
@@ -79,9 +84,79 @@ function deepMerge(base, override) {
   return out
 }
 
+const HEX_COLOR = /^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/
+
+/**
+ * 어드민이 적는 주소들은 결국 브라우저에서 <img src> 나 <a href> 가 됩니다.
+ * javascript: 같은 스킴이 섞여 들어가면 그 자리가 그대로 스크립트 실행 지점이 되므로,
+ * 우리 사이트 안의 상대 경로와 http(s) 주소만 통과시킵니다.
+ */
+export function safeUrl(value) {
+  const raw = String(value ?? '').trim()
+  if (!raw) return ''
+  // "//evil.example" 같은 프로토콜 상대 주소는 상대 경로처럼 보이지만 외부로 나갑니다.
+  if (raw.startsWith('/') && !raw.startsWith('//')) return raw
+  return /^https?:\/\//i.test(raw) ? raw : ''
+}
+
+// 빈 칸을 Number() 에 넣으면 0 이 나옵니다. 그 0 을 그대로 받아들이면
+// "칸을 비웠다" 가 "0으로 설정했다" 로 바뀌므로, 값이 없는 경우는 기본값으로 돌립니다.
+function num(value, fallback, min, max) {
+  if (value === '' || value === null || value === undefined) return fallback
+  const n = Number(value)
+  if (!Number.isFinite(n)) return fallback
+  return Math.min(max, Math.max(min, n))
+}
+
+function int(value, fallback, min, max) {
+  return Math.round(num(value, fallback, min, max))
+}
+
+function float(value, fallback, min, max) {
+  return num(value, fallback, min, max)
+}
+
+/**
+ * 숫자 칸을 비운 채 저장하면 '' 이 그대로 들어옵니다. 그 값이 투표 개수 제한이나
+ * 쿨다운 계산까지 흘러가면 조용히 이상하게 동작하므로, 저장/조회 양쪽에서 모양을 맞춥니다.
+ * 색상 역시 CSS 변수로 그대로 들어가니 hex 형식만 통과시킵니다.
+ */
+function normalizeConfig(config) {
+  const { contest, discord, link, teleport, vote } = config
+  return {
+    ...config,
+    contest: {
+      ...contest,
+      year: int(contest.year, DEFAULT_CONFIG.contest.year, 2000, 2100),
+      month: int(contest.month, DEFAULT_CONFIG.contest.month, 1, 12),
+      accent: HEX_COLOR.test(String(contest.accent ?? '')) ? contest.accent : DEFAULT_CONFIG.contest.accent,
+      backgroundBlur: int(contest.backgroundBlur, 0, 0, 40),
+      backgroundDim: float(contest.backgroundDim, 0, 0, 0.95),
+      logoUrl: safeUrl(contest.logoUrl),
+      backgroundUrl: safeUrl(contest.backgroundUrl),
+    },
+    discord: {
+      ...discord,
+      guildInviteUrl: safeUrl(discord.guildInviteUrl),
+    },
+    link: {
+      ...link,
+      guideUrl: safeUrl(link.guideUrl),
+    },
+    teleport: {
+      ...teleport,
+      cooldownSeconds: int(teleport.cooldownSeconds, 0, 0, 3600),
+    },
+    vote: {
+      ...vote,
+      maxVotes: int(vote.maxVotes, DEFAULT_CONFIG.vote.maxVotes, 1, 50),
+    },
+  }
+}
+
 export function getConfig() {
   const stored = read('config', {})
-  const merged = deepMerge(DEFAULT_CONFIG, stored)
+  const merged = normalizeConfig(deepMerge(DEFAULT_CONFIG, stored))
   if (!merged.sessionSecret) {
     merged.sessionSecret = randomBytes(32).toString('hex')
     write('config', merged)
@@ -90,7 +165,7 @@ export function getConfig() {
 }
 
 export function saveConfig(patch) {
-  const next = deepMerge(getConfig(), patch)
+  const next = normalizeConfig(deepMerge(getConfig(), patch))
   write('config', next)
   return next
 }
