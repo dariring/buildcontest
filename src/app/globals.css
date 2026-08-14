@@ -1,0 +1,500 @@
+@import url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css');
+
+/* ---------------------------------------------------------------- fonts */
+
+@font-face {
+  font-family: 'Galmuri11';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2506-1@1.0/Galmuri11-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------- tokens */
+
+:root {
+  /* 픽셀 폰트는 메인 타이틀과 아주 작은 숫자 라벨에만 */
+  --font-pixel: 'Galmuri11', 'Galmuri9', monospace;
+  --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Apple SD Gothic Neo',
+    'Segoe UI', 'Malgun Gothic', system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  --accent: #c9873b;
+  --accent-text: #a06720;
+  --accent-tint: #f8efe2;
+  --accent-ring: rgba(201, 135, 59, 0.16);
+
+  --mint: #4faa82;
+  --mint-tint: #e8f5ee;
+  --peach-tint: #fdf0e7;
+  --peach-text: #9c5a29;
+  --rose: #d1495f;
+  --rose-tint: #fceef0;
+
+  --bg: #ffffff;
+  --bg-2: #f5f5f7; /* 섹션 띠 */
+  --card: #ffffff;
+  --sunken: #f0f0f3;
+
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #8e8e93;
+
+  --line: rgba(0, 0, 0, 0.08);
+  --line-2: rgba(0, 0, 0, 0.15);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.14);
+
+  --r-lg: 20px;
+  --r: 14px;
+  --r-sm: 10px;
+  --r-block: 7px; /* 작은 블록 칩 */
+
+  --nav-h: 60px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent-text: #e5aa5c;
+    --accent-tint: rgba(201, 135, 59, 0.18);
+    --accent-ring: rgba(201, 135, 59, 0.26);
+
+    --mint: #4faa82;
+    --mint-tint: rgba(79, 170, 130, 0.18);
+    --peach-tint: rgba(240, 158, 120, 0.16);
+    --peach-text: #eda877;
+    --rose-tint: rgba(209, 73, 95, 0.16);
+
+    --bg: #000000;
+    --bg-2: #0b0b0c;
+    --card: #1a1a1c;
+    --sunken: #232326;
+
+    --text: #f5f5f7;
+    --text-2: #a1a1a6;
+    --text-3: #86868b;
+
+    --line: rgba(255, 255, 255, 0.1);
+    --line-2: rgba(255, 255, 255, 0.2);
+
+    --shadow-sm: none;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.65);
+  }
+}
+
+/* ---------------------------------------------------------------- reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 28px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.026em;
+}
+
+a {
+  color: var(--accent-text);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--accent-tint);
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.shell {
+  width: min(1020px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    width: calc(100% - 32px);
+  }
+  body {
+    font-size: 16px;
+  }
+}
+
+/* 마크 느낌 포인트 — 아주 작은 픽셀 숫자 라벨 */
+.pixel {
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 980px;
+  padding: 11px 22px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.014em;
+  background: var(--sunken);
+  color: var(--text);
+  transition:
+    transform 0.18s var(--spring),
+    background-color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    opacity 0.2s var(--ease);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.btn:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 86%, #000);
+}
+
+.btn--outline {
+  background: transparent;
+  border-color: var(--line-2);
+}
+.btn--outline:hover:not(:disabled) {
+  background: var(--sunken);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-2);
+  padding: 9px 14px;
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+.btn--danger {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--rose) 40%, transparent);
+  color: var(--rose);
+}
+.btn--danger:hover:not(:disabled) {
+  background: var(--rose-tint);
+}
+
+.btn--sm {
+  padding: 7.5px 15px;
+  font-size: 13.5px;
+}
+
+.btn--lg {
+  padding: 15px 32px;
+  font-size: 17px;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------- fields */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field > label,
+.field-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: -0.005em;
+}
+
+.field-hint {
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  padding: 10px 13px;
+  font-size: 15px;
+  transition:
+    border-color 0.16s var(--ease),
+    box-shadow 0.16s var(--ease);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-3);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3.5px var(--accent-ring);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.65;
+}
+
+.input--mono {
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox input {
+  margin: 3px 0 0;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------- misc */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 980px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background: var(--sunken);
+  color: var(--text-2);
+}
+
+.pill--accent {
+  background: var(--accent-tint);
+  color: var(--accent-text);
+}
+
+.pill--warn {
+  background: var(--peach-tint);
+  color: var(--peach-text);
+}
+
+.pill--danger {
+  background: var(--rose-tint);
+  color: var(--rose);
+}
+
+.pill--ok {
+  background: var(--mint-tint);
+  color: var(--mint);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+.spin {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.68s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.6s var(--ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

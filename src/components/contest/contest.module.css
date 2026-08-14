@@ -1,0 +1,1157 @@
+/* ================================================================== nav */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--line);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  min-width: 0;
+}
+
+.navBrand:hover {
+  text-decoration: none;
+}
+
+/* 로고는 원본 비율 그대로. 자르지 않는다. */
+.navLogo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.navBrandLabel {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.userChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 13px 4px 4px;
+  border-radius: 980px;
+  background: var(--sunken);
+  font-size: 13.5px;
+  font-weight: 500;
+  max-width: 210px;
+}
+
+.userChip img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.userChipName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .navBrandLabel {
+    display: none;
+  }
+  .navLogo {
+    height: 32px;
+  }
+  .userChipName {
+    max-width: 82px;
+  }
+}
+
+/* ================================================================= hero */
+
+.hero {
+  position: relative;
+  padding: clamp(76px, 14vh, 140px) 0 clamp(56px, 9vh, 96px);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 배경 이미지를 넣었을 때만 히어로 안쪽에 깔린다. 페이지 전체를 덮지 않는다. */
+.heroBg {
+  position: absolute;
+  inset: -30px;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 6px 15px;
+  border-radius: 980px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+/* 1%의 귀여움 — 블록이 아주 가끔 갸웃한다 */
+.brick {
+  display: inline-block;
+  font-size: 13px;
+  animation: tilt 8s var(--ease) infinite;
+  transform-origin: 50% 80%;
+}
+
+@keyframes tilt {
+  0%,
+  88%,
+  100% {
+    transform: rotate(0deg);
+  }
+  92% {
+    transform: rotate(-12deg);
+  }
+  96% {
+    transform: rotate(9deg);
+  }
+}
+
+/* 마크 느낌 포인트 — 메인 타이틀만 픽셀 폰트 */
+.heroTitle {
+  margin-top: 26px;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: clamp(28px, 6vw, 58px);
+  line-height: 1.34;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.heroTagline {
+  margin: 22px auto 0;
+  max-width: 36ch;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-2);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.heroActions {
+  margin-top: 34px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.heroNotice {
+  margin: 26px auto 0;
+  max-width: 50ch;
+  padding: 13px 20px;
+  border-radius: var(--r);
+  background: var(--peach-tint);
+  color: var(--peach-text);
+  font-size: 14.5px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* 배경 이미지가 깔린 히어로는 글자를 밝게 */
+.heroOnImage .heroTitle,
+.heroOnImage .navBrandLabel {
+  color: #fff;
+}
+
+.heroOnImage .heroTagline {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.heroOnImage .eyebrow {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+/* ---------------------------------------------------------- status card */
+
+.status {
+  margin: 48px auto 0;
+  max-width: 620px;
+  text-align: left;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.heroOnImage .status {
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.step + .step {
+  border-top: 1px solid var(--line);
+}
+
+/* 마크 느낌 포인트 — 둥근 사각 블록 */
+.stepMark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-block);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--sunken);
+  color: var(--text-3);
+  transition: all 0.26s var(--spring);
+}
+
+.stepMarkDone {
+  background: var(--mint-tint);
+  color: var(--mint);
+}
+
+.stepMarkActive {
+  background: var(--accent);
+  color: #fff;
+}
+
+.stepBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+.stepDesc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  margin-top: 2px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.stepAction {
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------ 진행도: 인벤토리 슬롯 느낌 */
+
+.slots {
+  margin-top: 9px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.slot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--sunken);
+  transition:
+    background-color 0.3s var(--ease),
+    transform 0.3s var(--spring);
+}
+
+.slotOn {
+  background: var(--mint);
+  transform: scale(1.06);
+}
+
+/* ============================================================== section */
+
+.section {
+  padding: clamp(52px, 8vh, 88px) 0 170px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.sectionTitle {
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.032em;
+}
+
+.sectionSub {
+  margin-top: 8px;
+  color: var(--text-2);
+  font-size: 15px;
+}
+
+/* ================================================================= list */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transition:
+    box-shadow 0.28s var(--ease),
+    transform 0.28s var(--ease),
+    border-color 0.2s var(--ease);
+}
+
+.row:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.rowSelected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.rowSelected:hover {
+  box-shadow: 0 0 0 3px var(--accent-ring), var(--shadow);
+}
+
+.rowMedia {
+  width: 276px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 마크 느낌 포인트 — 순번은 사진 위 픽셀 숫자 배지로.
+   픽셀 폰트는 자체 상하 여백이 있어서 flex 중앙정렬 + 살짝 보정해야 네모 안에 맞습니다. */
+.rowIndex {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  height: 22px;
+  min-width: 30px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 11px;
+  /* Galmuri 의 em 박스는 베이스라인 아래 2px 이 비어 있어 숫자가 아래로 처집니다.
+     그 절반인 1px 만 아래에서 깎아주면 잉크가 정확히 가운데에 옵니다. */
+  padding-bottom: 1px;
+  transition:
+    background-color 0.22s var(--ease),
+    color 0.22s var(--ease);
+}
+
+.rowSelected .rowIndex {
+  background: var(--accent);
+  color: #fff;
+}
+
+.rowTitle {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.026em;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.rowBuilder {
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.rowBuilderAnon {
+  color: var(--text-3);
+  font-style: normal;
+}
+
+.rowDesc {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.rowFoot {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rowAside {
+  width: 92px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-left: 1px solid var(--line);
+}
+
+@media (max-width: 880px) {
+  .row {
+    flex-wrap: wrap;
+  }
+  .rowMedia {
+    width: 100%;
+  }
+  .rowBody {
+    padding: 20px;
+  }
+  .rowAside {
+    width: 100%;
+    height: 76px;
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+}
+
+.visitedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mint);
+}
+
+.rowError {
+  font-size: 13px;
+  color: var(--rose);
+  line-height: 1.55;
+  background: var(--rose-tint);
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+}
+
+/* ------------------------------------------------------------ selection */
+
+.asideStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+/* 마크 느낌 포인트 — 둥근 사각 슬롯 */
+.pickBtn {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--line-2);
+  border-radius: var(--r-block);
+  background: transparent;
+  color: transparent;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.22s var(--spring),
+    background-color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.pickBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-tint);
+  transform: scale(1.07);
+}
+
+.pickBtn:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.pickBtnOn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.pickBtnOn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+
+.pickLabel {
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+/* ============================================================ carousel */
+
+.carousel {
+  position: relative;
+  height: 100%;
+  min-height: 188px;
+  background: var(--sunken);
+  overflow: hidden;
+}
+
+@media (max-width: 880px) {
+  .carousel {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.44s var(--ease);
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* 사진 전체가 확대 버튼 */
+.slideBtn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zoomHint {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--spring);
+  pointer-events: none;
+}
+
+.carousel:hover .zoomHint,
+.slideBtn:focus-visible .zoomHint {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (hover: none) {
+  .zoomHint {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 점 표시가 있는 캐러셀은 확대 아이콘을 살짝 위로 */
+.carousel:has(.dots) .zoomHint {
+  bottom: 42px;
+}
+
+.carouselEmpty {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  height: 100%;
+  min-height: 188px;
+  color: var(--text-3);
+  font-size: 13px;
+  gap: 9px;
+  text-align: center;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1d1d1f;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--spring);
+}
+
+.carousel:hover .arrow,
+.arrow:focus-visible {
+  opacity: 1;
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+.arrowLeft {
+  left: 9px;
+}
+.arrowRight {
+  right: 9px;
+}
+
+@media (hover: none) {
+  .arrow {
+    opacity: 1;
+  }
+}
+
+.dots {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 980px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transition:
+    width 0.25s var(--ease),
+    background-color 0.25s var(--ease);
+}
+
+.dotOn {
+  width: 17px;
+  border-radius: 980px;
+  background: #fff;
+}
+
+/* 마크 느낌 포인트 — 작은 픽셀 카운터. 순번 배지와 같은 규격 */
+.counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  height: 22px;
+  padding: 0 8px 1px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 11px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+/* ============================================================ lightbox */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 68px 24px 84px;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: zoom-out;
+  animation: lbIn 0.22s var(--ease) both;
+}
+
+@keyframes lbIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lbImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  cursor: default;
+  opacity: 0;
+  transform: scale(0.985);
+  transition:
+    opacity 0.28s var(--ease),
+    transform 0.28s var(--ease);
+}
+
+.lbImageIn {
+  opacity: 1;
+  transform: none;
+}
+
+.lbClose,
+.lbArrow {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  transition:
+    background-color 0.18s var(--ease),
+    transform 0.18s var(--spring);
+}
+
+.lbClose:hover,
+.lbArrow:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.lbClose:active,
+.lbArrow:active {
+  transform: scale(0.92);
+}
+
+.lbClose {
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+}
+
+.lbArrow {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+}
+
+.lbArrow:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.lbArrowLeft {
+  left: 20px;
+}
+
+.lbArrowRight {
+  right: 20px;
+}
+
+.lbBar {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 48px);
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: default;
+}
+
+.lbTitle {
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 마크 느낌 포인트 — 픽셀 카운터 */
+.lbCounter {
+  flex-shrink: 0;
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 11px;
+  padding-bottom: 1px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 620px) {
+  .lightbox {
+    padding: 60px 12px 76px;
+  }
+  .lbArrow {
+    width: 38px;
+    height: 38px;
+  }
+  .lbArrowLeft {
+    left: 10px;
+  }
+  .lbArrowRight {
+    right: 10px;
+  }
+}
+
+/* ================================================================= dock */
+
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 70;
+  width: min(640px, calc(100% - 28px));
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 13px 12px 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  box-shadow: var(--shadow-lg);
+  animation: dockIn 0.4s var(--spring) both;
+}
+
+@keyframes dockIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 18px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.dockText {
+  flex: 1;
+  min-width: 0;
+}
+
+.dockTitle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.dockSub {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dockCount {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.dockPip {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--line-2);
+  transition: all 0.26s var(--spring);
+}
+
+.dockPipOn {
+  background: var(--accent);
+  transform: scale(1.18);
+}
+
+@media (max-width: 620px) {
+  .dock {
+    border-radius: var(--r-lg);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 15px 17px;
+    gap: 12px;
+  }
+  .dockSub {
+    white-space: normal;
+  }
+}
+
+/* =============================================================== toast */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 76px;
+  transform: translateX(-50%);
+  z-index: 90;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(29, 29, 31, 0.94);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-lg);
+  animation: dockIn 0.32s var(--spring) both;
+  max-width: min(90vw, 520px);
+  text-align: center;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.toastError {
+  background: rgba(184, 55, 75, 0.96);
+}
+
+/* ============================================================== results */
+
+.results {
+  margin-top: 44px;
+  padding: 24px 26px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resultsTitle {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.026em;
+  margin-bottom: 4px;
+}
+
+.resultRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14.5px;
+}
+
+.resultName {
+  width: 182px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.resultBar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sunken);
+  overflow: hidden;
+}
+
+.resultBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.6s var(--ease);
+}
+
+.resultCount {
+  width: 46px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .resultName {
+    width: 104px;
+  }
+}
+
+/* ================================================================ empty */
+
+.empty {
+  text-align: center;
+  padding: 76px 24px;
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line-2);
+  color: var(--text-3);
+  font-size: 15px;
+}
+
+.emptyEmoji {
+  font-size: 34px;
+  display: block;
+  margin-bottom: 12px;
+  animation: bob 3.2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* =============================================================== footer */
+
+.footer {
+  padding: 30px 0 44px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.footerInner {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.footer a {
+  color: inherit;
+}
+
+/* ============================================================= skeleton */
+
+.skeleton {
+  border-radius: var(--r);
+  background: var(--sunken);
+  animation: pulse 1.5s var(--ease) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
