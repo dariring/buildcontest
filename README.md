@@ -102,43 +102,33 @@ sequenceDiagram
 - **Node.js**: `v20.9.0` 이상
 - **npm**: `v10.0.0` 이상
 
-### 📦 설치 및 실행
+### 💻 로컬에서 개발하기
 
 ```bash
-# 1. 저장소 클론
 git clone https://github.com/dariring/buildcontest.git
 cd buildcontest
-
-# 2. 의존성 패키지 설치
 npm install
-
-# 3. 개발 서버 실행 (Quick Development)
 npm run dev
+```
 
-# 4. 프로덕션 빌드 & 실행 (Production)
+`http://localhost:3000` 에서 확인합니다. 서버와 클라이언트가 한 포트에서 같이 돌고, 코드를 고치면 새로고침 없이 반영됩니다.
+
+### 🚀 서버에 올리기
+
+```bash
+git clone https://github.com/dariring/buildcontest.git
+cd buildcontest
+npm install
 npm start
 ```
 
-실행 후 브라우저에서 `http://localhost:3000` 에 접속하세요.  
-최초 어드민 설정은 `http://localhost:3000/admin` 에 접속하여 비밀번호를 지정한 후 진행합니다.
-
-### 새 서버에 올리기 (Ubuntu / Debian)
-
-Node.js 20 이상만 있으면 됩니다. 시스템에 따로 등록할 것은 없습니다.
-
-```bash
-git clone https://github.com/dariring/buildcontest.git
-cd buildcontest
-./scripts/setup.sh          # 의존성 설치 + 클라이언트 빌드 (sudo 불필요)
-```
-
-`scripts/setup.sh` 는 `npm ci` 와 `npm run build` 를 대신 돌려줄 뿐입니다. `npm install` 후 `npm start` 를 직접 쳐도 결과는 같습니다. (`npm start` 가 `prestart` 로 빌드를 먼저 돌립니다.)
+`npm start` 가 클라이언트를 빌드한 뒤 서버를 띄웁니다. 빌드 명령을 따로 칠 필요는 없습니다.
 
 **tmux 로 띄워두기**
 
 ```bash
 tmux new -s contest
-HOST=127.0.0.1 BUILDCONTEST_TRUST_PROXY=1 BUILDCONTEST_PUBLIC_ORIGIN=https://contest.example.com npm start
+npm start
 # Ctrl+B, D 로 빠져나오기
 ```
 
@@ -146,10 +136,28 @@ HOST=127.0.0.1 BUILDCONTEST_TRUST_PROXY=1 BUILDCONTEST_PUBLIC_ORIGIN=https://con
 tmux attach -t contest      # 다시 붙기
 ```
 
-업데이트는 `git pull && ./scripts/setup.sh` 후 재시작하면 됩니다. `data/` 는 건드리지 않습니다.
+Cloudflare Tunnel 등 프록시 뒤에 둘 경우에는 환경 변수를 함께 넘겨야 합니다. 아래 **Cloudflare Tunnel 로 공개하기** 를 참고하세요.
+
+**업데이트**
+
+```bash
+./scripts/update.sh
+```
+
+최신 소스를 받아 다시 빌드합니다. 의존성이 그대로면 설치는 건너뛰고, 고친 파일이 있으면 덮어쓰지 않고 멈춥니다. `data/` 는 건드리지 않습니다.
+
+빌드가 끝나면 **서버를 반드시 재시작해야 합니다.** 서버는 켜질 때 `dist/index.html` 을 한 번만 읽어두는데, 빌드하면 정적 파일 이름의 해시가 바뀌어서 재시작하지 않으면 없는 파일을 가리키게 됩니다.
+
+```bash
+tmux attach -t contest      # Ctrl+C 로 끄고 다시 npm start
+```
 
 > [!WARNING]
 > 서버를 공개한 직후 바로 `/admin` 에 접속해 관리자 비밀번호를 정하세요. **먼저 접속한 사람이 관리자가 됩니다.**
+
+> [!TIP]
+> `./scripts/setup.sh` 는 Node 버전을 확인하고 `npm ci` 와 빌드를 대신 돌려주는 선택 사항입니다. 위 명령을 직접 쳐도 결과는 같습니다.
+> 스크립트는 이 둘뿐이며(`setup.sh`, `update.sh`) 둘 다 sudo 없이 돌고 시스템에 아무것도 설치하지 않습니다.
 
 ---
 
@@ -251,13 +259,9 @@ buildcontest/
 
 ## ⚙️ 배포 및 환경 설정 팁
 
-- **포트 변경**: `PORT=4000 npm start`
-- **바인딩 주소 변경**: `HOST=127.0.0.1 npm start` (기본값은 `0.0.0.0`)
-- **데이터 폴더 경로 변경**: `BUILDCONTEST_DATA_DIR=/custom/path npm start`
-- **리버스 프록시 (HTTPS)**: NGINX / Cloudflare 등을 이용해 HTTPS를 적용하고, 디스코드 개발자 포털의 Redirect URI와 어드민의 **리디렉션 URL**을 실제 도메인 주소로 맞춰주어야 디스코드 로그인이 정상 작동합니다.
-- **프록시 뒤에 둘 때는 `BUILDCONTEST_TRUST_PROXY=1 npm start`**: 이 값을 켜야 세션 쿠키에 `Secure` 가 붙고, 로그인 시도 제한이 프록시 IP 하나가 아니라 실제 접속자별로 계산됩니다. 프록시 없이 서버를 직접 노출하는 경우에는 절대 켜지 마세요. 접속자가 헤더를 위조해 IP를 속일 수 있습니다.
+### 환경 변수
 
-### 환경 변수 정리
+모두 `npm start` 앞에 붙여서 씁니다. 예) `PORT=4000 npm start`
 
 | 변수 | 기본값 | 설명 |
 |---|---|---|
@@ -266,6 +270,13 @@ buildcontest/
 | `BUILDCONTEST_DATA_DIR` | `./data` | 데이터 저장 폴더 |
 | `BUILDCONTEST_TRUST_PROXY` | (꺼짐) | 프록시 뒤일 때 `1`. `x-forwarded-*` 를 신뢰합니다 |
 | `BUILDCONTEST_PUBLIC_ORIGIN` | (자동) | 밖에서 보이는 실제 주소. 프록시가 Host 헤더를 바꿔서 넘길 때 지정 |
+
+### 리버스 프록시 뒤에 둘 때
+
+- HTTPS 는 앞단(Cloudflare, NGINX 등)에서 처리하고, 앱은 `HOST=127.0.0.1` 로 묶어 프록시를 통해서만 닿게 합니다.
+- `BUILDCONTEST_TRUST_PROXY=1` 을 켜야 세션 쿠키에 `Secure` 가 붙고, 로그인 시도 제한이 프록시 IP 하나가 아니라 실제 접속자별로 계산됩니다.
+- 반대로 **프록시 없이 서버를 직접 노출한다면 절대 켜지 마세요.** 접속자가 헤더를 위조해 IP를 속일 수 있습니다.
+- 디스코드 개발자 포털의 Redirect URI 와 어드민의 **리디렉션 URL** 을 실제 도메인 주소로 맞춰야 로그인이 작동합니다.
 
 ---
 

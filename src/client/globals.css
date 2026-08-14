@@ -67,11 +67,19 @@
 /* --------------------------------------------------------------- tokens */
 
 :root {
+  /* 웹폰트는 font-display: swap 이라, 내려받는 동안에는 아래 목록의 다음 후보로 먼저 그려집니다.
+     그 "먼저 그려지는 글꼴" 을 generic(monospace/sans-serif)으로 두면 안 됩니다.
+     한글 Windows 에서 monospace 는 굴림체로 떨어져서 폰트가 뜨기 전까지 화면이 상합니다.
+     (실측: monospace 와 GulimChe 의 텍스트 폭이 303.64px 로 완전히 동일)
+     그래서 generic 앞에 각 OS 의 기본 UI 글꼴을 세워둡니다. */
+  --system-ui: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI',
+    'Malgun Gothic', 'Noto Sans KR', system-ui;
+
   /* 픽셀 폰트는 메인 타이틀과 아주 작은 숫자 라벨에만 */
-  --font-pixel: 'Galmuri11', 'Galmuri9', monospace;
-  --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Apple SD Gothic Neo',
-    'Segoe UI', 'Malgun Gothic', system-ui, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --font-pixel: 'Galmuri11', 'Galmuri9', var(--system-ui), sans-serif;
+  --font: 'Pretendard', 'SF Pro Text', var(--system-ui), sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', 'Cascadia Mono', Menlo, Consolas,
+    'Malgun Gothic', monospace;
 
   --accent: #c9873b;
   --accent-text: #a06720;

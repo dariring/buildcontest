@@ -13,12 +13,14 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* width 를 지정하지 않습니다. 폭은 함께 붙는 .shell 이 정합니다.
+   여기서 width:100% 를 주면 .shell 의 좌우 여백을 덮어써서
+   로고와 버튼이 화면 가장자리에 딱 붙습니다. */
 .navInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  width: 100%;
 }
 
 .navBrand {
