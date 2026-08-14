@@ -100,3 +100,21 @@ export function Photo({ size = 26 }) {
     </svg>
   )
 }
+
+export function Video({ size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base} strokeWidth={1.4}>
+      <rect x="2" y="5.5" width="15" height="13" rx="2.5" />
+      <path d="M17 9.5l5-2.5v10l-5-2.5" />
+    </svg>
+  )
+}
+
+export function PlayCircle({ size = 22 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...base} strokeWidth={1.6}>
+      <circle cx="12" cy="12" r="9.5" />
+      <path d="M10 8.5l6 3.5-6 3.5z" strokeWidth={1.4} fill="currentColor" stroke="none" />
+    </svg>
+  )
+}

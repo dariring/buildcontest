@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import s from './contest.module.css'
 import { ChevronLeft, ChevronRight, Close } from './icons.jsx'
+import { isVideo } from './Carousel.jsx'
 
 /**
- * 사진 크게 보기. 배경·닫기 버튼·ESC 로 닫히고 ←/→ 로 넘깁니다.
+ * 사진/동영상 크게 보기. 배경·닫기 버튼·ESC 로 닫히고 ←/→ 로 넘깁니다.
+ * 동영상은 실시간 스트리밍으로 재생됩니다.
  */
 export default function Lightbox({ images, index, onIndex, onClose, title }) {
   const [loaded, setLoaded] = useState(false)
@@ -63,9 +65,10 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
 
   if (!mounted || count === 0) return null
 
-  // 사진이 열려 있는 동안 하나가 깨져서 목록이 줄어들면 index 가 범위를 벗어납니다.
-  // 그대로 두면 src 가 undefined 인 빈 이미지가 뜹니다.
+  // 사진/동영상이 열려 있는 동안 하나가 깨져서 목록이 줄어들면 index 가 범위를 벗어납니다.
   const safeIndex = Math.min(Math.max(0, index), count - 1)
+  const currentUrl = images[safeIndex]
+  const currentIsVideo = isVideo(currentUrl)
 
   // 카드가 overflow:hidden + hover transform 이라 그 안에 두면 잘립니다.
   // body 로 옮겨야 화면 전체를 덮을 수 있습니다.
@@ -74,7 +77,7 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
       className={s.lightbox}
       role="dialog"
       aria-modal="true"
-      aria-label={`${title} 사진 크게 보기`}
+      aria-label={`${title} ${currentIsVideo ? '동영상' : '사진'} 크게 보기`}
       onClick={onClose}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -92,7 +95,7 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
               e.stopPropagation()
               go(-1)
             }}
-            aria-label="이전 사진"
+            aria-label="이전 미디어"
           >
             <ChevronLeft size={22} />
           </button>
@@ -103,23 +106,37 @@ export default function Lightbox({ images, index, onIndex, onClose, title }) {
               e.stopPropagation()
               go(1)
             }}
-            aria-label="다음 사진"
+            aria-label="다음 미디어"
           >
             <ChevronRight size={22} />
           </button>
         </>
       )}
 
-      {/* 클릭이 배경으로 새어나가지 않도록 사진 영역은 이벤트를 막습니다. */}
-      <img
-        key={images[safeIndex]}
-        className={`${s.lbImage} ${loaded ? s.lbImageIn : ''}`}
-        src={images[safeIndex]}
-        alt={`${title} ${safeIndex + 1}번째 사진`}
-        onClick={(e) => e.stopPropagation()}
-        onLoad={() => setLoaded(true)}
-        draggable={false}
-      />
+      {/* 클릭이 배경으로 새어나가지 않도록 미디어 영역은 이벤트를 막습니다. */}
+      {currentIsVideo ? (
+        <video
+          key={currentUrl}
+          className={`${s.lbVideo} ${loaded ? s.lbImageIn : ''}`}
+          src={currentUrl}
+          controls
+          autoPlay
+          playsInline
+          loop
+          onClick={(e) => e.stopPropagation()}
+          onCanPlay={() => setLoaded(true)}
+        />
+      ) : (
+        <img
+          key={currentUrl}
+          className={`${s.lbImage} ${loaded ? s.lbImageIn : ''}`}
+          src={currentUrl}
+          alt={`${title} ${safeIndex + 1}번째 사진`}
+          onClick={(e) => e.stopPropagation()}
+          onLoad={() => setLoaded(true)}
+          draggable={false}
+        />
+      )}
 
       <div className={s.lbBar} onClick={(e) => e.stopPropagation()}>
         <span className={s.lbTitle}>{title}</span>
