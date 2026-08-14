@@ -156,12 +156,12 @@ function Editor({ value, onChange, onSave, onDelete, onPreview, saving, isNew })
       {/* ------------------------------------------------------- 좌표 */}
       <Field label="텔레포트 좌표" hint="참가자가 이 위치로 이동합니다. yaw 는 바라보는 방향, pitch 는 상하 각도입니다.">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 9 }}>
-          <input className="input input--mono" value={value.coords.world} onChange={(e) => setCoord('world', e.target.value)} placeholder="world" />
-          <input className="input input--mono" type="number" value={value.coords.x} onChange={(e) => setCoord('x', Number(e.target.value))} placeholder="x" />
-          <input className="input input--mono" type="number" value={value.coords.y} onChange={(e) => setCoord('y', Number(e.target.value))} placeholder="y" />
-          <input className="input input--mono" type="number" value={value.coords.z} onChange={(e) => setCoord('z', Number(e.target.value))} placeholder="z" />
-          <input className="input input--mono" type="number" value={value.coords.yaw} onChange={(e) => setCoord('yaw', Number(e.target.value))} placeholder="yaw" />
-          <input className="input input--mono" type="number" value={value.coords.pitch} onChange={(e) => setCoord('pitch', Number(e.target.value))} placeholder="pitch" />
+          <input className="input input--mono" value={value.coords.world ?? ''} onChange={(e) => setCoord('world', e.target.value)} placeholder="world" />
+          <input className="input input--mono" value={value.coords.x ?? ''} onChange={(e) => setCoord('x', e.target.value)} placeholder="x" />
+          <input className="input input--mono" value={value.coords.y ?? ''} onChange={(e) => setCoord('y', e.target.value)} placeholder="y" />
+          <input className="input input--mono" value={value.coords.z ?? ''} onChange={(e) => setCoord('z', e.target.value)} placeholder="z" />
+          <input className="input input--mono" value={value.coords.yaw ?? ''} onChange={(e) => setCoord('yaw', e.target.value)} placeholder="yaw" />
+          <input className="input input--mono" value={value.coords.pitch ?? ''} onChange={(e) => setCoord('pitch', e.target.value)} placeholder="pitch" />
         </div>
       </Field>
 
