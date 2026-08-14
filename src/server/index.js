@@ -78,6 +78,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "font-src 'self' data: https://cdn.jsdelivr.net",
   'img-src * data: blob:',
+  'media-src *',
   DEV ? "connect-src 'self' ws: wss:" : "connect-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
